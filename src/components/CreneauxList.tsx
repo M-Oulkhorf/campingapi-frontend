@@ -44,15 +44,13 @@ export default function CreneauxList() {
     mutationFn: participerCreneau,
     onSuccess: (data) => {
       // Afficher le message de succès retourné par l'API
-      setSuccessMessage(data.message); // Supposons que l'API retourne { message: "..." }
+      setSuccessMessage(data || "Participation réussie !"); // Utilisez directement `data`
       setErrorMessage(null); // Effacer les messages d'erreur précédents
       queryClient.invalidateQueries(["creneaux", "campeurs"]); // Rafraîchir les données
     },
     onError: (error) => {
-      // Afficher le message d'erreur retourné par l'API
-      setErrorMessage(
-        error.response?.data?.message || "Une erreur s'est produite."
-      );
+      // Afficher directement la réponse de l'API
+      setErrorMessage(error.response?.data); // Utilisez directement `error.response.data`
       setSuccessMessage(null); // Effacer les messages de succès précédents
     },
   });
@@ -190,8 +188,6 @@ export default function CreneauxList() {
             {user?.role === "CAMPEUR" && (
               <button
                 onClick={() => {
-                  console.log("campeurId:", user.id); // Vérifiez la valeur de campeurId
-                  console.log("creneauId:", creneau.idCreneau); // Vérifiez la valeur de creneauId
                   participerMutation.mutate({
                     campeurId: user.id,
                     creneauId: creneau.idCreneau,

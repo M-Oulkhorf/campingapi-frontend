@@ -114,10 +114,10 @@ export const participerCreneau = async ({
         },
       }
     );
-    return response.data;
+    return response.data; // Retourne la réponse directe de l'API
   } catch (error) {
     console.error("Erreur lors de la participation:", error);
-    throw error;
+    throw error; // Propage l'erreur pour qu'elle soit capturée par onError
   }
 };
 
