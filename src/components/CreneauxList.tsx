@@ -10,6 +10,7 @@ import {
   annulerParticipation,
   assignerAnimateur,
   getAnimateurs,
+  confirmerParticipation,
 } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { Users, Clock, X, UserPlus } from "lucide-react";
@@ -81,6 +82,23 @@ export default function CreneauxList() {
       });
     }
   };
+
+  //confirmer Participation Mutation
+  const confirmerParticipationMutation = useMutation({
+    mutationFn: confirmerParticipation,
+    onSuccess: (data) => {
+      setSuccessMessage(data || "Participation confirmée avec succès !");
+      setErrorMessage(null);
+      queryClient.invalidateQueries(["creneaux", "campeurs"]);
+    },
+    onError: (error) => {
+      setErrorMessage(error.response?.data);
+      setSuccessMessage(null);
+    },
+  });
+  const [participantStatus, setParticipantStatus] = useState<{
+    [key: number]: "present" | "absent" | null;
+  }>({});
 
   // Masquer les messages après 5 secondes
   useEffect(() => {
@@ -156,29 +174,64 @@ export default function CreneauxList() {
                   <p>Chargement des participants...</p>
                 ) : campeurs?.length ? (
                   <ul className="space-y-2">
-                    {campeurs.map((campeur) => (
-                      <li
-                        key={campeur.id}
-                        className="flex items-center justify-between"
-                      >
-                        <span>
-                          {campeur.prenom} {campeur.nom}
-                        </span>
-                        {user?.role === "ADMIN" && (
-                          <button
-                            onClick={() =>
-                              annulerMutation.mutate({
-                                campeurId: campeur.id,
-                                creneauId: creneau.idCreneau,
-                              })
-                            }
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        )}
-                      </li>
-                    ))}
+                    {campeurs.map((campeur) => {
+                      const isToday =
+                        new Date(creneau.dateCreneau)
+                          .toISOString()
+                          .split("T")[0] ===
+                        new Date().toISOString().split("T")[0];
+
+                      return (
+                        <li
+                          key={campeur.id}
+                          className="flex items-center justify-between"
+                        >
+                          <span>
+                            {campeur.prenom} {campeur.nom}
+                            {participantStatus[campeur.id] === "present" &&
+                              " (Présent)"}
+                            {participantStatus[campeur.id] === "absent" &&
+                              " (Absent)"}
+                          </span>
+                          {(user?.role === "ADMIN" ||
+                            user?.role === "ANIMATEUR") &&
+                            isToday && (
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => {
+                                    confirmerParticipationMutation.mutate({
+                                      campeurId: campeur.id,
+                                      creneauId: creneau.idCreneau,
+                                    });
+                                    setParticipantStatus((prev) => ({
+                                      ...prev,
+                                      [campeur.id]: "present",
+                                    }));
+                                  }}
+                                  className="text-green-600 hover:text-green-800"
+                                >
+                                  Présent
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    annulerMutation.mutate({
+                                      campeurId: campeur.id,
+                                      creneauId: creneau.idCreneau,
+                                    });
+                                    setParticipantStatus((prev) => ({
+                                      ...prev,
+                                      [campeur.id]: "absent",
+                                    }));
+                                  }}
+                                  className="text-red-600 hover:text-red-800"
+                                >
+                                  Absent
+                                </button>
+                              </div>
+                            )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <p>Aucun participant</p>

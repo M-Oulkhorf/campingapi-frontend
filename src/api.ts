@@ -147,16 +147,6 @@ export const annulerParticipation = async (
   return response.data;
 };
 
-export const confirmerParticipation = async (
-  campeurId: number,
-  creneauId: number
-) => {
-  const response = await api.put(
-    `/creneaux/participation-effectuee/${campeurId}/${creneauId}`
-  );
-  return response.data;
-};
-
 // Animateurs
 export const getAnimateurPlanning = async (animateurId: number) => {
   try {
@@ -170,6 +160,25 @@ export const getAnimateurPlanning = async (animateurId: number) => {
       error
     );
     return [];
+  }
+};
+
+//confermation participation
+export const confirmerParticipation = async ({
+  campeurId,
+  creneauId,
+}: {
+  campeurId: number;
+  creneauId: number;
+}) => {
+  try {
+    const response = await api.put(
+      `/creneaux/participation-effectuee/${campeurId}/${creneauId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Erreur lors de la confirmation de la participation:", error);
+    throw error;
   }
 };
 
