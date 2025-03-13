@@ -121,6 +121,22 @@ export const participerCreneau = async ({
   }
 };
 
+//Participations
+export const getCreneauxByCampeurId = async (campeurId: number) => {
+  try {
+    const response = await api.get<Creneau[]>(
+      `/creneaux/${campeurId}/creneaux`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Erreur lors de la récupération des créneaux pour le campeur ${campeurId}:`,
+      error
+    );
+    return [];
+  }
+};
+
 export const annulerParticipation = async (
   campeurId: number,
   creneauId: number

@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import CreneauxList from "./components/CreneauxList";
 import AnimateurPlanning from "./components/AnimateurPlanning";
+import MesParticipations from "./components/MesParticipations"; // Importez le nouveau composant
 import { AuthProvider } from "./context/AuthContext";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,10 @@ function App() {
                       <CreneauxList />
                     </>
                   }
+                />
+                <Route
+                  path="/mes-participations"
+                  element={<MesParticipations />}
                 />
               </Routes>
             </main>

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Calendar, LogIn, LogOut, UserPlus } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Calendar, LogIn, LogOut, UserPlus, CheckSquare } from "lucide-react";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -19,6 +19,15 @@ export default function Navbar() {
             {user ? (
               <>
                 <span>Bonjour, {user.prenom}</span>
+                {user.role === "CAMPEUR" && (
+                  <Link
+                    to="/mes-participations"
+                    className="flex items-center space-x-1 hover:text-gray-200"
+                  >
+                    <CheckSquare className="h-5 w-5" />
+                    <span>Mes participations</span>
+                  </Link>
+                )}
                 <button
                   onClick={logout}
                   className="flex items-center space-x-1 hover:text-gray-200"
