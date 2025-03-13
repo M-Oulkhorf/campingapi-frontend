@@ -57,9 +57,15 @@ export default function CreneauxList() {
   });
 
   const annulerMutation = useMutation({
-    mutationFn: annulerParticipation,
+    mutationFn: ({ campeurId, creneauId }) =>
+      annulerParticipation(campeurId, creneauId),
     onSuccess: () => {
-      queryClient.invalidateQueries(["creneaux", "campeurs"]);
+      setSuccessMessage("l'absence est bien enregistrée");
+      setErrorMessage(null);
+    },
+    onError: (error) => {
+      setErrorMessage("Erreur de fonctionnement de site");
+      setSuccessMessage(null);
     },
   });
 
